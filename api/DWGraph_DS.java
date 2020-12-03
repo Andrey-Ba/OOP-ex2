@@ -67,4 +67,11 @@ public class DWGraph_DS implements  directed_weighted_graph{
     public int getMC() {
         return MC;
     }
+
+    private boolean NodesCheck(int src, int dest)
+    {
+        if(src == dest || !V.containsKey(src) || !V.containsKey(dest))
+            return false;
+        return true;
+    }
 }
