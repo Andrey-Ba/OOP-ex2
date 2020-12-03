@@ -2,6 +2,8 @@ package api;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 public class DWGraph_DS implements  directed_weighted_graph{
     private HashMap<Integer,node_data> V;
@@ -22,7 +24,9 @@ public class DWGraph_DS implements  directed_weighted_graph{
 
     @Override
     public edge_data getEdge(int src, int dest) {
-        return null;
+        if(EdgesCheck(src, dest))
+            return null;
+        return E.get(src).get(dest);
     }
 
     @Override
@@ -30,6 +34,7 @@ public class DWGraph_DS implements  directed_weighted_graph{
         V.put(n.getKey(),n);
         E.put(n.getKey(), new HashMap<>());
         ER.put(n.getKey(),new HashMap<>());
+        MC++;
     }
 
     @Override
@@ -39,11 +44,13 @@ public class DWGraph_DS implements  directed_weighted_graph{
         if(EdgesCheck(src, dest))
         {
             ((EdgeData)E.get(src).get(dest)).setWeight(w);
+            MC++;
             return;
         }
         EdgeData e = new EdgeData(src,dest,w);
         E.get(src).put(dest,e);
         ER.get(dest).put(src,e);
+        MC++;
     }
 
     @Override
@@ -58,7 +65,26 @@ public class DWGraph_DS implements  directed_weighted_graph{
 
     @Override
     public node_data removeNode(int key) {
-        return null;
+        //Check if the graph has that edge.
+        if(!V.containsKey(key))
+            return null;
+
+        //Remove the node from all edges.
+        Iterator<Integer> it = ER.get(key).keySet().iterator();
+        while (it.hasNext())
+            E.get(it.next()).remove(key);
+
+        //Remove the node from all reversed edges.
+        Iterator<Integer> it2 = E.get(key).keySet().iterator();
+        while (it2.hasNext())
+            ER.get(it2.next()).remove(key);
+
+        node_data n = V.get(key);
+        V.remove(key);
+        E.remove(key);
+        ER.remove(key);
+        MC++;
+        return n;
     }
 
     @Override
@@ -70,6 +96,7 @@ public class DWGraph_DS implements  directed_weighted_graph{
         edge_data e = E.get(src).get(dest);
         E.get(src).remove(dest);
         ER.get(dest).remove(src);
+        MC++;
         return e;
     }
 
@@ -80,7 +107,7 @@ public class DWGraph_DS implements  directed_weighted_graph{
 
     @Override
     public int edgeSize() {
-        return 0;
+        return E.size();
     }
 
     @Override
@@ -88,13 +115,14 @@ public class DWGraph_DS implements  directed_weighted_graph{
         return MC;
     }
 
+    //Checks that the src and dest nodes exists and are not the same.
     private boolean NodesCheck(int src, int dest)
     {
         if(src == dest || !V.containsKey(src) || !V.containsKey(dest))
             return false;
         return true;
     }
-
+    //Checks if an edge already exists.
     private boolean EdgesCheck(int src, int dest)
     {
         return E.get(src).containsKey(dest);
