@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class DWGraph_DS implements  directed_weighted_graph{
     private HashMap<Integer,node_data> V;
     private HashMap<Integer,HashMap<Integer,edge_data>> E;
-
+    private HashMap<Integer,HashMap<Integer,edge_data>> ER;
     private int MC;
 
     public DWGraph_DS()
@@ -29,6 +29,7 @@ public class DWGraph_DS implements  directed_weighted_graph{
     public void addNode(node_data n) {
         V.put(n.getKey(),n);
         E.put(n.getKey(), new HashMap<>());
+        ER.put(n.getKey(),new HashMap<>());
     }
 
     @Override
@@ -37,11 +38,12 @@ public class DWGraph_DS implements  directed_weighted_graph{
             return;
         if(EdgesCheck(src, dest))
         {
-            E.get(src).remove(dest);
-            E.get(src).put(dest,new EdgeData(src,dest,w));
+            ((EdgeData)E.get(src).get(dest)).setWeight(w);
             return;
         }
-        E.get(src).put(dest,new EdgeData(src,dest,w));
+        EdgeData e = new EdgeData(src,dest,w);
+        E.get(src).put(dest,e);
+        ER.get(dest).put(src,e);
     }
 
     @Override
@@ -61,7 +63,14 @@ public class DWGraph_DS implements  directed_weighted_graph{
 
     @Override
     public edge_data removeEdge(int src, int dest) {
-        return null;
+        if(!NodesCheck(src, dest))
+            return null;
+        if(!EdgesCheck(src, dest))
+            return null;
+        edge_data e = E.get(src).get(dest);
+        E.get(src).remove(dest);
+        ER.get(dest).remove(src);
+        return e;
     }
 
     @Override
