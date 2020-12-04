@@ -77,6 +77,66 @@ class DWGraph_DSTest {
         assertEquals(9,g.nodeSize());
     }
 
+    @Test
+    void NodeequalsTest()
+    {
+        node_data n1 = new NodeData(1);
+        node_data n2 = new NodeData(1);
+        node_data n3 = new NodeData(2);
+        node_data n4 = new NodeData(n1);
+        node_data n5 = null;
+        assertEquals(n1,n2);
+        assertNotEquals(n1,n3);
+        assertNotSame(n1,n4);
+        assertEquals(n1,n4);
+        assertNotEquals(n1,n5);
+    }
+
+    @Test
+    void EdgeequalsTest()
+    {
+        edge_data e1 = new EdgeData(1,2,5);
+        edge_data e2 = new EdgeData(1,2,5);
+        edge_data e3 = new EdgeData(2,1,5);
+        edge_data e4 = new EdgeData(1,2,6);
+        edge_data e5 = new EdgeData(2,1,6);
+        edge_data e6 = new EdgeData(3,1,6);
+        edge_data e7 = null;
+
+        assertEquals(e1,e2);
+        assertNotEquals(e1,e3);
+        assertNotEquals(e1,e4);
+        assertNotEquals(e1,e5);
+        assertNotEquals(e1,e6);
+        assertNotEquals(e1,e7);
+    }
+
+    @Test
+    void GraphequalsTest()
+    {
+        directed_weighted_graph g1 = new DWGraph_DS();
+        directed_weighted_graph g2 = new DWGraph_DS();
+
+        for(int i = 0; i<10;i++)
+        {
+            g1.addNode(new NodeData(i));
+            g2.addNode(new NodeData(i));
+        }
+        assertEquals(g1,g2);
+        g1.removeNode(1);
+        assertNotEquals(g1,g2);
+        g1.addNode(new NodeData(1));
+
+        g1.connect(1,2,3);
+        g2.connect(1,2,3);
+        assertEquals(g1,g2);
+        g1.connect(2,1,5);
+        assertNotEquals(g1,g2);
+        directed_weighted_graph g3 = new DWGraph_DS(g1);
+        assertNotEquals(g2,g3);
+        g2.connect(2,1,5);
+        assertEquals(g2,g3);
+    }
 
     public static void collprint(Collection col)
     {

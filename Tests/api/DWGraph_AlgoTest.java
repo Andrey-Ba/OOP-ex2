@@ -1,5 +1,7 @@
 package api;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
@@ -7,8 +9,15 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DWGraph_AlgoTest {
-    
 
+    @Test
+    void CopyTest()
+    {
+        edge_data e1 = new EdgeData(1,2,5);
+        edge_data e2 = new EdgeData(1,2,5);
+        assertEquals(e1,e2);
+        assertNotSame(e1,e2);
+    }
 
 
     public static void collprint(Collection col)

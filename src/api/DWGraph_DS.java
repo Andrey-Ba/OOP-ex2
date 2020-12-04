@@ -1,9 +1,6 @@
 package api;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class DWGraph_DS implements  directed_weighted_graph{
     private HashMap<Integer,node_data> V;
@@ -23,6 +20,7 @@ public class DWGraph_DS implements  directed_weighted_graph{
 
     public DWGraph_DS(directed_weighted_graph g)
     {
+        this();
         //Insert all nodes
         Iterator<node_data> it = g.getV().iterator();
         while (it.hasNext())
@@ -142,6 +140,19 @@ public class DWGraph_DS implements  directed_weighted_graph{
     @Override
     public int getMC() {
         return MC;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DWGraph_DS that = (DWGraph_DS) o;
+        return edges == that.edges && Objects.equals(V, that.V) && Objects.equals(E, that.E) && Objects.equals(ER, that.ER);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(V, E, ER, edges, MC);
     }
 
     //Checks that the src and dest nodes exists and are not the same.

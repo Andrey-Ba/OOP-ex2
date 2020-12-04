@@ -1,5 +1,7 @@
 package api;
 
+import java.util.Objects;
+
 public class NodeData implements node_data
 {
     private int key;
@@ -79,5 +81,18 @@ public class NodeData implements node_data
                 ", Tag=" + Tag +
                 ", location=" + location +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NodeData nodeData = (NodeData) o;
+        return key == nodeData.key && Double.compare(nodeData.weight, weight) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, weight);
     }
 }
