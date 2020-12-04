@@ -1,5 +1,11 @@
 package api;
 
+import com.google.gson.Gson;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class DWGraph_Algo implements dw_graph_algorithms{
@@ -48,6 +54,22 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     @Override
     public boolean save(String file) {
+        JSONObject obj = new JSONObject();
+        Gson gs = new Gson();
+        try {
+            obj.put("Graph",gs.toJson(g));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            FileWriter f = new FileWriter(file);
+            f.write(obj.toString());
+            f.flush();
+            f.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 

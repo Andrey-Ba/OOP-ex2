@@ -11,12 +11,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class DWGraph_AlgoTest {
 
     @Test
-    void CopyTest()
+    void SaveTest()
     {
-        edge_data e1 = new EdgeData(1,2,5);
-        edge_data e2 = new EdgeData(1,2,5);
-        assertEquals(e1,e2);
-        assertNotSame(e1,e2);
+        directed_weighted_graph g = new DWGraph_DS();
+        for (int i = 0; i<100;i++)
+            g.addNode(new NodeData(i));
+        while (g.edgeSize()<1000)
+            g.connect(nextRnd(1,101),nextRnd(1,101),nextRnd(0.1,10));
+        dw_graph_algorithms ga = new DWGraph_Algo(g);
+        ga.save("Jsonfile.json");
     }
 
 
