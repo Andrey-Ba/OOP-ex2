@@ -28,7 +28,7 @@ public class DWGraph_DS implements  directed_weighted_graph{
 
     @Override
     public edge_data getEdge(int src, int dest) {
-        if(EdgesCheck(src, dest))
+        if(!EdgesCheck(src, dest))
             return null;
         return E.get(src).get(dest);
     }
@@ -47,11 +47,14 @@ public class DWGraph_DS implements  directed_weighted_graph{
             return;
         if(EdgesCheck(src, dest))
         {
-            ((EdgeData)E.get(src).get(dest)).setWeight(w);
+            edge_data e = E.get(src).get(dest);
+            if(e.getWeight()==w)
+                return;
+            ((EdgeData)e).setWeight(w);
             MC++;
             return;
         }
-        EdgeData e = new EdgeData(src,dest,w);
+        edge_data e = new EdgeData(src,dest,w);
         E.get(src).put(dest,e);
         ER.get(dest).put(src,e);
         edges++;
