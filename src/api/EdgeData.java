@@ -1,5 +1,7 @@
 package api;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public class EdgeData implements edge_data

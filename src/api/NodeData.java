@@ -1,8 +1,10 @@
 package api;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
-public class NodeData implements node_data
+public class NodeData implements node_data, Comparable<node_data>
 {
     private int key;
     private double weight;
@@ -94,5 +96,15 @@ public class NodeData implements node_data
     @Override
     public int hashCode() {
         return Objects.hash(key, weight);
+    }
+
+    @Override
+    public int compareTo(@NotNull node_data o) {
+        double d = weight - o.getWeight();
+        if(d<0)
+            return -1;
+        if (d>1)
+            return 1;
+        return 0;
     }
 }
