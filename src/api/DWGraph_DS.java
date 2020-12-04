@@ -21,6 +21,24 @@ public class DWGraph_DS implements  directed_weighted_graph{
         MC = 0;
     }
 
+    public DWGraph_DS(directed_weighted_graph g)
+    {
+        //Insert all nodes
+        Iterator<node_data> it = g.getV().iterator();
+        while (it.hasNext())
+            addNode(new NodeData(it.next()));
+        //Insert all edges
+        it = g.getV().iterator();
+        while (it.hasNext())
+        {
+            Iterator<edge_data> it2 = g.getE(it.next().getKey()).iterator();
+            while (it2.hasNext()) {
+                edge_data e = it2.next();
+                connect(e.getSrc(), e.getDest(),e.getWeight());
+            }
+        }
+    }
+
     @Override
     public node_data getNode(int key) {
         return V.get(key);

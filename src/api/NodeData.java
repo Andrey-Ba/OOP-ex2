@@ -21,6 +21,15 @@ public class NodeData implements node_data
         location = null;
     }
 
+    public NodeData(node_data n)
+    {
+        key = n.getKey();
+        weight = n.getWeight();
+        Info = n.getInfo();
+        Tag = n.getTag();
+        location = null;
+    }
+
     @Override
     public geo_location getLocation() {
         return location;
