@@ -60,4 +60,15 @@ public class NodeData implements node_data
     public void setTag(int t) {
         Tag = t;
     }
+
+    @Override
+    public String toString() {
+        return "NodeData{" +
+                "key=" + key +
+                ", weight=" + weight +
+                ", Info='" + Info + '\'' +
+                ", Tag=" + Tag +
+                ", location=" + location +
+                '}';
+    }
 }

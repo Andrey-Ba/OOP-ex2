@@ -62,4 +62,15 @@ public class EdgeData implements edge_data
     {
         weight = w;
     }
+
+    @Override
+    public String toString() {
+        return "EdgeData{" +
+                "src=" + src +
+                ", dest=" + dest +
+                ", weight=" + weight +
+                ", info='" + info + '\'' +
+                ", tag=" + tag +
+                '}';
+    }
 }
