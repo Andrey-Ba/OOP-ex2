@@ -19,7 +19,7 @@ public class NodeData implements node_data, Comparable<node_data>
     public NodeData(int k)
     {
         key = k;
-        weight = 0;
+        weight = -1;
         Info = "";
         Tag = 0;
         location = null;
@@ -90,12 +90,12 @@ public class NodeData implements node_data, Comparable<node_data>
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NodeData nodeData = (NodeData) o;
-        return key == nodeData.key && Double.compare(nodeData.weight, weight) == 0;
+        return key == nodeData.key;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, weight);
+        return Objects.hash(key);
     }
 
     @Override

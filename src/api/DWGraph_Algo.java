@@ -6,7 +6,9 @@ import org.json.JSONObject;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class DWGraph_Algo implements dw_graph_algorithms{
 
@@ -44,7 +46,43 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     @Override
     public double shortestPathDist(int src, int dest) {
-        return 0;
+        PriorityQueue<node_data> pq = new PriorityQueue<>();
+        g.getNode(src).setWeight(0);
+        pq.add(g.getNode(src));
+        while (!pq.isEmpty())
+        {
+            node_data node = pq.remove();
+            node.setInfo("B");
+            Iterator<edge_data> it = g.getE(node.getKey()).iterator();
+            while (it.hasNext())
+            {
+                edge_data e = it.next();
+                node_data n = g.getNode(e.getDest());
+                if(e.getDest()==dest)
+                {
+                    double new_weight = node.getWeight()+e.getWeight();
+                    if(n.getWeight()>new_weight || n.getWeight()==-1)
+                        n.setWeight(new_weight);
+                }
+                else if(n.getInfo().equals(""))
+                {
+                    n.setInfo("V");
+                    n.setWeight(node.getWeight()+e.getWeight());
+                    pq.add(n);
+                }
+                else if(n.getInfo().equals("V"))
+                {
+                    double new_weight = node.getWeight()+e.getWeight();
+                    if(n.getWeight()>new_weight)
+                    {
+                        n.setWeight(new_weight);
+                        pq.remove(n);
+                        pq.add(n);
+                    }
+                }
+            }
+        }
+        return g.getNode(dest).getWeight();
     }
 
     @Override
