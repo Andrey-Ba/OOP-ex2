@@ -47,29 +47,50 @@ class DWGraph_AlgoTest {
     {
         directed_weighted_graph g = new DWGraph_DS();
         dw_graph_algorithms ga = new DWGraph_Algo(g);
-//        for(int i = 0; i<10; i++)
-//            g.addNode(new NodeData(i));
-//        assertFalse(ga.isConnected());
-//        while (g.edgeSize()<90)
-//            g.connect(nextRnd(0,10),nextRnd(0,10),nextRnd(0.5,10));
-//        assertTrue(ga.isConnected());
-//
-//        g = new DWGraph_DS();
-        //System.out.println(g.nodeSize());
-        for(int i = 0; i<5; i++)
+        for(int i = 0; i<10; i++)
             g.addNode(new NodeData(i));
-        g.connect(0,1,2);
-        g.connect(1,2,1);
-        g.connect(2,3,11);
-        g.connect(3,0,12);
-        g.connect(0,4,7);
-        g.connect(4,0,13);
-        //System.out.println(g.edgeSize());
+        assertFalse(ga.isConnected());
+        while (g.edgeSize()<90)
+            g.connect(nextRnd(0,10),nextRnd(0,10),nextRnd(0.5,10));
         assertTrue(ga.isConnected());
-        g.removeEdge(4,0);
+
+        directed_weighted_graph g2 = new DWGraph_DS();
+        for(int i = 0; i<5; i++)
+            g2.addNode(new NodeData(i));
+        ga.init(g2);
+        g2.connect(0,1,2);
+        g2.connect(1,2,1);
+        g2.connect(2,3,11);
+        g2.connect(3,0,12);
+        g2.connect(0,4,7);
+        g2.connect(4,0,13);
+        assertTrue(ga.isConnected());
+        g2.removeEdge(4,0);
         assertFalse(ga.isConnected());
     }
 
+    @Test
+    void CopyTest()
+    {
+        directed_weighted_graph g = new DWGraph_DS();
+        dw_graph_algorithms ga = new DWGraph_Algo(g);
+        for(int i = 0; i<50;i++)
+            g.addNode(new NodeData(i));
+        g.connect(1,2,3);
+        while (g.edgeSize()<2000)
+            g.connect(nextRnd(0,50),nextRnd(0,50),nextRnd(0.5,10));
+        directed_weighted_graph g2 = ga.copy();
+        assertEquals(g,g2);
+        g2.removeNode(5);
+        assertNotEquals(g,g2);
+        g2 = ga.copy();
+        assertEquals(g,g2);
+        g2.removeEdge(1,2);
+        assertNotEquals(g,g2);
+        g.removeEdge(1,2);
+        g2.connect(1,2,3);
+        assertNotEquals(g,g2);
+    }
 
     public static void collprint(Collection col)
     {
