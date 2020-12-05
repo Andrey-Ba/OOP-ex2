@@ -6,10 +6,7 @@ import org.json.JSONObject;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms{
 
@@ -42,7 +39,65 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     @Override
     public boolean isConnected() {
-        return false;
+        if(g.nodeSize()<2)
+            return true;
+        if(g.edgeSize()<0 && g.edgeSize()/2< g.nodeSize()-1)
+            return false;
+        //Get the first node of the graph.
+        Iterator<node_data> ite = g.getV().iterator();
+        node_data n = ite.next();
+        LinkedList<node_data> lst = new LinkedList<>();
+        if(dfs(n,lst)<g.nodeSize())
+            return false;
+        resetnodes(lst);
+        lst = new LinkedList<>();
+        int c = Rdfs(n,lst);
+        resetnodes(lst);
+        return c==g.nodeSize();
+    }
+
+    private int dfs(node_data n, LinkedList<node_data> lst)
+    {
+        //List to reset the all used nodes information.
+        lst.add(n);
+        //How many nodes the algorithms went through.
+        int c = 0;
+        //Mark as grey.
+        n.setInfo("g");
+        //Iterator for the node's connections.
+        Iterator<edge_data> it = g.getE(n.getKey()).iterator();
+        while (it.hasNext())
+        {
+            edge_data e = it.next();
+            node_data nd = g.getNode(e.getDest());
+            //Check that the next connected node is not grey or black.
+            if(!nd.getInfo().equals("g") && !nd.getInfo().equals("b"))
+            {
+                c += dfs(nd,lst);
+            }
+        }
+        n.setInfo("B");
+        return c+1;
+    }
+
+    private int Rdfs(node_data n, LinkedList<node_data> lst)
+    {
+        lst.add(n);
+        int c = 0;
+        n.setInfo("g");
+        //Iterator on the reversed edges of n.
+        Iterator<edge_data> it = ((DWGraph_DS)g).getER(n.getKey()).iterator();
+        while (it.hasNext())
+        {
+            edge_data e = it.next();
+            node_data nd = g.getNode(e.getSrc());
+            if(!nd.getInfo().equals("g") && !nd.getInfo().equals("b"))
+            {
+                c += dfs(nd,lst);
+            }
+        }
+        n.setInfo("B");
+        return c+1;
     }
 
     @Override

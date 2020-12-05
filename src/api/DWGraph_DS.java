@@ -5,6 +5,7 @@ import java.util.*;
 public class DWGraph_DS implements  directed_weighted_graph{
     private HashMap<Integer,node_data> V;
     private HashMap<Integer,HashMap<Integer,edge_data>> E;
+    //Reversed edges.
     private HashMap<Integer,HashMap<Integer,edge_data>> ER;
     private int edges;
     private int MC;
@@ -85,6 +86,11 @@ public class DWGraph_DS implements  directed_weighted_graph{
     @Override
     public Collection<edge_data> getE(int node_id) {
         return E.get(node_id).values();
+    }
+
+    public Collection<edge_data> getER(int node_id)
+    {
+        return ER.get(node_id).values();
     }
 
     @Override

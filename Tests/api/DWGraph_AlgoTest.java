@@ -42,12 +42,23 @@ class DWGraph_AlgoTest {
         assertEquals(-1,ga.shortestPathDist(1,2));
     }
 
+    @Test
+    void isconnectedTest()
+    {
+        directed_weighted_graph g = new DWGraph_DS();
+        for(int i = 0; i<10; i++)
+            g.addNode(new NodeData(i));
+
+    }
+
+
     public static void collprint(Collection col)
     {
         Iterator<Object> it = col.iterator();
         while (it.hasNext())
             System.out.println(it.next().toString());
     }
+
     static Random _rnd = new Random(42);
 
     public static int nextRnd(int min, int max) {
@@ -55,6 +66,7 @@ class DWGraph_AlgoTest {
         int ans = (int)v;
         return ans;
     }
+
     public static double nextRnd(double min, double max) {
         double d = _rnd.nextDouble();
         double dx = max-min;
