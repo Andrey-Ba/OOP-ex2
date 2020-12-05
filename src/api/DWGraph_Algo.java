@@ -93,7 +93,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             node_data nd = g.getNode(e.getSrc());
             if(!nd.getInfo().equals("g") && !nd.getInfo().equals("b"))
             {
-                c += dfs(nd,lst);
+                c += Rdfs(nd,lst);
             }
         }
         n.setInfo("b");
