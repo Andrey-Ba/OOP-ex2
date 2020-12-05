@@ -21,7 +21,7 @@ public class NodeData implements node_data, Comparable<node_data>
         key = k;
         weight = -1;
         Info = "";
-        Tag = 0;
+        Tag = -1;
         location = null;
     }
 

@@ -28,13 +28,18 @@ class DWGraph_AlgoTest {
         directed_weighted_graph g = new DWGraph_DS();
         for(int i=0;i<100;i++)
             g.addNode(new NodeData(i));
-        g.connect(1,2,0.1);
-        g.connect(2,5,0.1);
         while (g.edgeSize()<1000)
             g.connect(nextRnd(1,101),nextRnd(1,101),nextRnd(0.5,10));
+        g.connect(1,5,10);
+        g.connect(1,2,0.1);
+        g.connect(2,5,0.1);
         dw_graph_algorithms ga = new DWGraph_Algo(g);
         assertEquals(0.2,ga.shortestPathDist(1,5));
-       // System.out.println(ga.shortestPathDist(1,5));
+        directed_weighted_graph g2 = new DWGraph_DS();
+        for(int i=0;i<10;i++)
+            g2.addNode(new NodeData(i));
+        ga.init(g2);
+        assertEquals(-1,ga.shortestPathDist(1,2));
     }
 
     public static void collprint(Collection col)
