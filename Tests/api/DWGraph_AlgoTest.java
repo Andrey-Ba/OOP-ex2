@@ -48,7 +48,10 @@ class DWGraph_AlgoTest {
         directed_weighted_graph g = new DWGraph_DS();
         for(int i = 0; i<10; i++)
             g.addNode(new NodeData(i));
-
+        while (g.edgeSize()<90)
+            g.connect(nextRnd(0,10),nextRnd(0,10),nextRnd(0.5,10));
+        dw_graph_algorithms ga = new DWGraph_Algo(g);
+        assertTrue(ga.isConnected());
     }
 
 

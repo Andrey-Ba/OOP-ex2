@@ -47,12 +47,15 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         Iterator<node_data> ite = g.getV().iterator();
         node_data n = ite.next();
         LinkedList<node_data> lst = new LinkedList<>();
-        if(dfs(n,lst)<g.nodeSize())
+        int c1 = dfs(n,lst);
+        System.out.println(c1);
+        if(c1<g.nodeSize())
             return false;
         resetnodes(lst);
         lst = new LinkedList<>();
         int c = Rdfs(n,lst);
         resetnodes(lst);
+        System.out.println(c);
         return c==g.nodeSize();
     }
 
@@ -76,7 +79,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
                 c += dfs(nd,lst);
             }
         }
-        n.setInfo("B");
+        n.setInfo("b");
         return c+1;
     }
 
@@ -96,7 +99,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
                 c += dfs(nd,lst);
             }
         }
-        n.setInfo("B");
+        n.setInfo("b");
         return c+1;
     }
 
