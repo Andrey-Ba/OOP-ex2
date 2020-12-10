@@ -10,6 +10,8 @@ import gameClient.util.Range2D;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,6 +26,9 @@ public class MyFrame extends JFrame{
 	private int _ind;
 	private Arena _ar;
 	private gameClient.util.Range2Range _w2f;
+	private long time;
+
+
 	MyFrame(String a) {
 		super(a);
 		int _ind = 0;
@@ -32,6 +37,11 @@ public class MyFrame extends JFrame{
 	public void update(Arena ar) {
 		this._ar = ar;
 		updateFrame();
+	}
+
+	public void updatetime(long t)
+	{
+		time = t;
 	}
 
 	@Override
@@ -45,6 +55,7 @@ public class MyFrame extends JFrame{
 		drawGraph(g);
 		drawAgants(g);
 		drawInfo(g);
+		clock(g);
 	}
 
 	private void updateFrame() {
@@ -116,11 +127,18 @@ public class MyFrame extends JFrame{
 		while(rs!=null && i<rs.size()) {
 			geo_location c = rs.get(i).getLocation();
 			int r=8;
+			double v = rs.get(i).getValue();
 			i++;
 			if(c!=null) {
-				//System.out.println(rs.get(i).getValue());
 				geo_location fp = this._w2f.world2frame(c);
+				g.setColor(Color.CYAN);
 				g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
+				if(v>0)
+					g.setColor(Color.GREEN);
+				else
+					g.setColor(Color.GRAY);
+				g.drawString(""+v,(int)fp.x()-r, (int)fp.y()-r);
+
 			}
 		}
 	}
@@ -138,5 +156,14 @@ public class MyFrame extends JFrame{
 		geo_location d0 = this._w2f.world2frame(d);
 		g.drawLine((int)s0.x(), (int)s0.y(), (int)d0.x(), (int)d0.y());
 	//	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
+	}
+
+	private void clock(Graphics g)
+	{
+		geo_location s = this._w2f.world2frame(new Point3D(35.211005454,32.110421045));
+		Font font = new Font("Ariel",Font.BOLD,(int) (getWidth()*0.015));
+		g.setFont(font);
+		g.setColor(Color.BLACK);
+		g.drawString("Seconds left: " + time/1000,(int) s.x(),(int)s.y());
 	}
 }
