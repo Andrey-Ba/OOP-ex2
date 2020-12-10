@@ -19,7 +19,6 @@ class DWGraph_AlgoTest {
         while (g.edgeSize()<1000)
             g.connect(nextRnd(1,101),nextRnd(1,101),nextRnd(0.1,10));
         dw_graph_algorithms ga = new DWGraph_Algo(g);
-        ga.save("Jsonfile.json");
     }
 
     @Test

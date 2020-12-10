@@ -1,11 +1,11 @@
 package api;
 
-import com.google.gson.Gson;
+//import com.google.gson.Gson;
+//import com.google.gson.JsonParser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms{
@@ -76,6 +76,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
                 c += dfs(nd,lst);
             }
         }
+        //Mark it as black
         n.setInfo("b");
         return c+1;
     }
@@ -213,27 +214,31 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     @Override
     public boolean save(String file) {
-        JSONObject obj = new JSONObject();
-        Gson gs = new Gson();
-        try {
-            obj.put("Graph",gs.toJson(g));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            FileWriter f = new FileWriter(file);
-            f.write(obj.toString());
-            f.flush();
-            f.close();
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        Gson gs = new Gson();
+//        try {
+//            FileWriter f = new FileWriter(file);
+//            gs.toJson(g,f);
+//            f.flush();
+//            f.close();
+//            return true;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return false;
     }
 
     @Override
     public boolean load(String file) {
+//        Gson gson = new Gson();
+//        try {
+//            BufferedReader br = new BufferedReader(new FileReader(file));
+//            g = gson.fromJson(br,DWGraph_DS.class);
+//            //g = graph;
+//            br.close();
+//            return true;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return false;
     }
 
