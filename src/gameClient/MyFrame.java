@@ -40,7 +40,7 @@ public class MyFrame extends JFrame{
 		int w = this.getWidth();
 		int h = this.getHeight();
 		g.clearRect(0, 0, w, h);
-		//	updateFrame();
+		updateFrame();
 		drawPokemons(g);
 		drawGraph(g);
 		drawAgants(g);
@@ -48,8 +48,8 @@ public class MyFrame extends JFrame{
 	}
 
 	private void updateFrame() {
-		Range rx = new Range(20,this.getWidth()-20);
-		Range ry = new Range(this.getHeight()-10,150);
+		Range rx = new Range(20,this.getWidth()-100);
+		Range ry = new Range(this.getHeight()-50,150);
 		Range2D frame = new Range2D(rx,ry);
 		directed_weighted_graph g = _ar.getGraph();
 		_w2f = Arena.w2f(g,frame);
@@ -63,17 +63,6 @@ public class MyFrame extends JFrame{
 		g.drawImage(buffer,0,0,this);
 
 	}
-//	public void paint(Graphics g) {
-//		int w = this.getWidth();
-//		int h = this.getHeight();
-//		g.clearRect(0, 0, w, h);
-//	//	updateFrame();
-//		drawPokemons(g);
-//		drawGraph(g);
-//		drawAgants(g);
-//		drawInfo(g);
-//
-//	}
 
 	private void drawInfo(Graphics g) {
 		List<String> str = _ar.get_info();
@@ -81,8 +70,8 @@ public class MyFrame extends JFrame{
 		for(int i=0;i<str.size();i++) {
 			g.drawString(str.get(i)+" dt: "+dt,100,60+i*20);
 		}
-		
 	}
+
 	private void drawGraph(Graphics g) {
 		directed_weighted_graph gg = _ar.getGraph();
 		Iterator<node_data> iter = gg.getV().iterator();
@@ -104,7 +93,6 @@ public class MyFrame extends JFrame{
 		Iterator<CL_Pokemon> itr = fs.iterator();
 		
 		while(itr.hasNext()) {
-			
 			CL_Pokemon f = itr.next();
 			Point3D c = f.getLocation();
 			int r=10;
@@ -130,7 +118,7 @@ public class MyFrame extends JFrame{
 			int r=8;
 			i++;
 			if(c!=null) {
-
+				//System.out.println(rs.get(i).getValue());
 				geo_location fp = this._w2f.world2frame(c);
 				g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
 			}
