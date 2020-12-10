@@ -27,10 +27,24 @@ public class MyFrame extends JFrame{
 	MyFrame(String a) {
 		super(a);
 		int _ind = 0;
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	public void update(Arena ar) {
 		this._ar = ar;
 		updateFrame();
+	}
+
+	@Override
+	public void paintComponents(Graphics g)
+	{
+		int w = this.getWidth();
+		int h = this.getHeight();
+		g.clearRect(0, 0, w, h);
+		//	updateFrame();
+		drawPokemons(g);
+		drawGraph(g);
+		drawAgants(g);
+		drawInfo(g);
 	}
 
 	private void updateFrame() {
@@ -41,16 +55,25 @@ public class MyFrame extends JFrame{
 		_w2f = Arena.w2f(g,frame);
 	}
 	public void paint(Graphics g) {
-		int w = this.getWidth();
-		int h = this.getHeight();
-		g.clearRect(0, 0, w, h);
-	//	updateFrame();
-		drawPokemons(g);
-		drawGraph(g);
-		drawAgants(g);
-		drawInfo(g);
-		
+		Image buffer;
+		Graphics buffer_g;
+		buffer = createImage(this.getWidth(),this.getHeight());
+		buffer_g = buffer.getGraphics();
+		paintComponents(buffer_g);
+		g.drawImage(buffer,0,0,this);
+
 	}
+//	public void paint(Graphics g) {
+//		int w = this.getWidth();
+//		int h = this.getHeight();
+//		g.clearRect(0, 0, w, h);
+//	//	updateFrame();
+//		drawPokemons(g);
+//		drawGraph(g);
+//		drawAgants(g);
+//		drawInfo(g);
+//
+//	}
 
 	private void drawInfo(Graphics g) {
 		List<String> str = _ar.get_info();
