@@ -126,13 +126,20 @@ public class MyFrame extends JFrame{
 		int i=0;
 		while(rs!=null && i<rs.size()) {
 			geo_location c = rs.get(i).getLocation();
+			double speed = rs.get(i).getSpeed();
 			int r=8;
 			double v = rs.get(i).getValue();
 			i++;
 			if(c!=null) {
 				geo_location fp = this._w2f.world2frame(c);
-				g.setColor(Color.CYAN);
+				if(speed == 1)
+					g.setColor(Color.BLACK);
+				else if(speed ==2)
+					g.setColor(Color.BLUE);
+				else
+					g.setColor(Color.CYAN);
 				g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
+				//Color based on value
 				if(v>0)
 					g.setColor(Color.GREEN);
 				else
