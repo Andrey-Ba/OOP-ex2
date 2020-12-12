@@ -40,13 +40,13 @@ public class Ex2 implements Runnable{
             update();
             makelist();
             for(int i=0;i<agents.size();i++) {
-//                Arena.getAgents(game.move(),g);
-//                arena.setAgents(agents);
+                Arena.getAgents(game.getAgents(),g);
+                arena.setAgents(agents);
                 CL_Agent agent = agents.get(i);
                 if(agent.getDest() == -1) {
                     followpath(agent, agent.GetPath());
                 }
-                if(r%2==0) {
+                if(r%3==0) {
                     Arena.getAgents(game.move(), g);
                     arena.setAgents(agents);
                 }
@@ -86,7 +86,7 @@ public class Ex2 implements Runnable{
         for(int i = 0; i<agentnum;i++)
         {
             CL_Agent agent = agents.get(i);
-            if(agent.getDest() == -1){// && agent.newpath()) {
+            if(agent.getDest() == -1 && agent.newpath()) {
                 PriorityQueue<CL_Pokemon> pq = createpqpok(i);
                 dw_graph_algorithms ga = new DWGraph_Algo(g);
                 CL_Pokemon pok = pq.peek();
@@ -106,7 +106,6 @@ public class Ex2 implements Runnable{
                     if(!ls.contains(g.getNode(ma)))
                     ls.add(g.getNode(ma));
                 }
-                System.out.println("!!" + ls);
                 agent.setPath(ls);
             }
 
@@ -121,6 +120,9 @@ public class Ex2 implements Runnable{
         for(int j = 0; j<pokemons.size();j++)
         {
             CL_Pokemon pok = pokemons.get(j);
+            for(int r=0;r<i;r++)
+                if(agents.get(r).get_curr_fruit() == pok)
+                    continue;
             System.out.println(pok.get_edge());
             edge_data e = pok.get_edge();
             int m;
@@ -131,6 +133,7 @@ public class Ex2 implements Runnable{
             System.out.println(pok.getMin_dist());
             pq.add(pok);
         }
+        agent.set_curr_fruit(pq.peek());
         return pq;
     }
 

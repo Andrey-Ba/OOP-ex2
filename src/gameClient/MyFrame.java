@@ -164,6 +164,6 @@ public class MyFrame extends JFrame{
 		Font font = new Font("Ariel",Font.BOLD,(int) (getWidth()*0.015));
 		g.setFont(font);
 		g.setColor(Color.BLACK);
-		g.drawString("Seconds left: " + time/1000,(int) s.x(),(int)s.y());
+		g.drawString("Seconds left: " + time/1000,50,50);//(int) s.x(),(int)s.y());
 	}
 }
