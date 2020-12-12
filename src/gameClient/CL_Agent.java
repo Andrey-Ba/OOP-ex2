@@ -27,7 +27,6 @@ public class CL_Agent {
 		private List<node_data> path = new LinkedList<>();
 		private double _value;
 
-
 	public void setPath(List<node_data> path) {
 			this.path = path;
 	}
@@ -188,4 +187,5 @@ public class CL_Agent {
 		public void set_sg_dt(long _sg_dt) {
 			this._sg_dt = _sg_dt;
 		}
-	}
+
+}

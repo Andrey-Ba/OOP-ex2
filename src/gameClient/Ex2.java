@@ -12,8 +12,7 @@ import java.util.PriorityQueue;
 public class Ex2 implements Runnable{
 
 
-    private int ga = 0;
-    private int level = 11;
+    private int level = 1;
     private Arena arena;
     private MyFrame frame;
     private List<CL_Agent> agents;
@@ -32,6 +31,7 @@ public class Ex2 implements Runnable{
     public void run() {
         int r = 0;
         game = Game_Server_Ex2.getServer(level);
+        //game.login(324560317);
         g = CreateFromJson.graphfromjson(game.getGraph());
         init();
         game.startGame();
@@ -40,13 +40,11 @@ public class Ex2 implements Runnable{
             update();
             makelist();
             for(int i=0;i<agents.size();i++) {
-                Arena.getAgents(game.getAgents(),g);
-                arena.setAgents(agents);
                 CL_Agent agent = agents.get(i);
-                if(agent.getDest() == -1) {
+                //if(agent.getDest() == -1) {
                     followpath(agent, agent.GetPath());
-                }
-                if(r%3==0) {
+                //}
+                if(r%1==0) {
                     Arena.getAgents(game.move(), g);
                     arena.setAgents(agents);
                 }
@@ -86,7 +84,7 @@ public class Ex2 implements Runnable{
         for(int i = 0; i<agentnum;i++)
         {
             CL_Agent agent = agents.get(i);
-            if(agent.getDest() == -1 && agent.newpath()) {
+            if(agent.getDest() == -1 ){//&& agent.newpath()) {
                 PriorityQueue<CL_Pokemon> pq = createpqpok(i);
                 dw_graph_algorithms ga = new DWGraph_Algo(g);
                 CL_Pokemon pok = pq.peek();
@@ -120,9 +118,6 @@ public class Ex2 implements Runnable{
         for(int j = 0; j<pokemons.size();j++)
         {
             CL_Pokemon pok = pokemons.get(j);
-            for(int r=0;r<i;r++)
-                if(agents.get(r).get_curr_fruit() == pok)
-                    continue;
             System.out.println(pok.get_edge());
             edge_data e = pok.get_edge();
             int m;
@@ -154,20 +149,33 @@ public class Ex2 implements Runnable{
     //Create the arena, frame and place the agents
     private void init()
     {
+        //Init arena
         arena = new Arena();
+        //Set arena's graph
         arena.setGraph(g);
+        //Init frame
         frame = new MyFrame("Game");
+        //Set frame's arena
         frame.update(arena);
+        //Set the pokemons list
         pokemons = Arena.json2Pokemons(game.getPokemons());
+        //Set pokemons list for the arena
         arena.setPokemons(pokemons);
+        //Update the edges of the pokemons
         updatepokemonsedges();
+        //Deploy agents next to the most valuable pokemons
         deployagents();
+        //Sets the agents list
         agents = Arena.getAgents(game.getAgents(),g);
+        //Set agents list for the arena
         arena.setAgents(agents);
+        //Set the frame size
         frame.setSize(900,900);
+        //Show the frame
         frame.show();
     }
 
+    //Update all pokemon's edges
     private void updatepokemonsedges() {
         for (int i = 0; i < pokemons.size(); i++)
         {
@@ -178,8 +186,11 @@ public class Ex2 implements Runnable{
     //Finds the most valuable pokemons and deploys an agent next to them
     private void deployagents()
     {
+        //Get how many agents are allowed
         setAgentnum();
+        //Find the most valuable poekmons
         CL_Pokemon[] mvp = mvpok();
+        //Deploy the agents so their first move will be a valuable pokemon
         for(int i=0;i<mvp.length;i++)
         {
             edge_data e = mvp[i].get_edge();
@@ -194,14 +205,18 @@ public class Ex2 implements Runnable{
         }
     }
 
+    //Find most valuable pokemons
     private CL_Pokemon[] mvpok()
     {
+
         CL_Pokemon[] mvp = new CL_Pokemon[agentnum];
+        //Set the first pokemons
         for(int i = 0;i<pokemons.size() && i<agentnum;i++)
         {
             mvp[i]=pokemons.get(i);
         }
 
+        //Update the least valuable pokemon in the array to a more valuable pokemon
         for(int i = 0;i<pokemons.size();i++)
         {
             int j = lvp(mvp);
@@ -211,7 +226,7 @@ public class Ex2 implements Runnable{
         return mvp;
     }
 
-    //Finds the least valuable pokemon in an array
+    //Finds the index of the least valuable pokemon in an array
     private int lvp(CL_Pokemon arr[])
     {
         int j = 0;
