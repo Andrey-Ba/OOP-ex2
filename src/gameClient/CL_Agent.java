@@ -20,6 +20,7 @@ public class CL_Agent {
 		private directed_weighted_graph _gg;
 		private CL_Pokemon _curr_fruit;
 		private long _sg_dt;
+		private int dest;
 		
 		private double _value;
 		
@@ -52,6 +53,7 @@ public class CL_Agent {
 					this.setSpeed(speed);
 					this.setNextNode(dest);
 					this.setMoney(value);
+					this.dest = ttt.getInt("dest");
 				}
 			}
 			catch(Exception e) {
@@ -156,7 +158,9 @@ public class CL_Agent {
 			}
 			this.set_sg_dt(ddt);
 		}
-		
+		public int getDest(){
+			return dest;
+		}
 		public edge_data get_curr_edge() {
 			return this._curr_edge;
 		}

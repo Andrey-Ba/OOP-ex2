@@ -2,6 +2,9 @@ package api;
 
 //import com.google.gson.Gson;
 //import com.google.gson.JsonParser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -224,19 +227,54 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+//        Gson gs = new GsonBuilder().create();
+//        try {
+//            FileWriter f = new FileWriter(file);
+//            gs.toJson(g,f);
+//            f.flush();
+//            f.close();
+//            return true;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return false;
     }
 
     @Override
     public boolean load(String file) {
-//        Gson gson = new Gson();
+//        JsonParser jp = new JsonParser();
+//        JSONObject o;
 //        try {
-//            BufferedReader br = new BufferedReader(new FileReader(file));
-//            g = gson.fromJson(br,DWGraph_DS.class);
-//            //g = graph;
-//            br.close();
-//            return true;
-//        } catch (IOException e) {
+//            FileReader f = new FileReader(file);
+//             String s = jp.parse(f).toString();
+//             //System.out.println(s);
+//             o = new JSONObject(s);
+//             String s1 = o.getJSONObject("V").toString();
+//             Gson gson = new GsonBuilder().create();
+//             HashMap<String,node_data> hm = gson.fromJson(s1,HashMap.class);
+//             directed_weighted_graph graph = new DWGraph_DS();
+//             Iterator<String> it = hm.keySet().iterator();
+//             while (it.hasNext()) {
+//                 graph.addNode(new NodeData(Integer.parseInt(it.next())));
+//             }
+//             s1 = o.getJSONObject("E").toString();
+//             HashMap<String,HashMap<Integer,edge_data>> hm2 = gson.fromJson(s1,HashMap.class);
+//             it = hm.keySet().iterator();
+//             while (it.hasNext())
+//             {
+//                 Iterator<edge_data> it2 = (hm2.get(it.next())).values().iterator();
+//                 System.out.println(it2.next().toString());
+//                 while ( it2.hasNext())
+//                 {
+//                     edge_data e = it2.next();
+//                     graph.connect(e.getSrc(),e.getDest(),e.getWeight());
+//                 }
+//             }
+//             g = graph;
+//             f.close();
+//             return true;
+//
+//        } catch (IOException | JSONException e) {
 //            e.printStackTrace();
 //        }
         return false;
