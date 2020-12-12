@@ -5,9 +5,7 @@ import api.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
 
 public class Ex2 implements Runnable{
 
@@ -84,10 +82,9 @@ public class Ex2 implements Runnable{
         for(int i = 0; i<agentnum;i++)
         {
             CL_Agent agent = agents.get(i);
-            if(agent.getDest() == -1 ){//&& agent.newpath()) {
-                PriorityQueue<CL_Pokemon> pq = createpqpok(i);
+            if(agent.getDest() == -1 ){
                 dw_graph_algorithms ga = new DWGraph_Algo(g);
-                CL_Pokemon pok = pq.peek();
+                CL_Pokemon pok = Closestpokemon(agent);
                 edge_data e = pok.get_edge();
                 List<node_data> ls;
                 int mi = Math.min(e.getSrc(),e.getDest());
@@ -110,26 +107,22 @@ public class Ex2 implements Runnable{
         }
     }
 
-    private PriorityQueue<CL_Pokemon> createpqpok(int i)
+    private CL_Pokemon Closestpokemon(CL_Agent agent)
     {
-        PriorityQueue<CL_Pokemon> pq = new PriorityQueue<>();
-        CL_Agent agent = agents.get(i);
         dw_graph_algorithms ga = new DWGraph_Algo(g);
-        for(int j = 0; j<pokemons.size();j++)
-        {
-            CL_Pokemon pok = pokemons.get(j);
-            System.out.println(pok.get_edge());
-            edge_data e = pok.get_edge();
+        CL_Pokemon pok = pokemons.get(0);
+        for (int i = 0; i < pokemons.size();i++){
+            CL_Pokemon p = pokemons.get(i);
+            edge_data e = p.get_edge();
             int m;
-            if(pok.getType() < 0)
+            if(pok.getType() > 0)
                 m = Math.max(e.getSrc(),e.getDest());
             else m = Math.min(e.getSrc(),e.getDest());
             pok.setMin_dist(ga.shortestPathDist(agent.getSrcNode(),m)+e.getWeight());
-            System.out.println(pok.getMin_dist());
-            pq.add(pok);
+            if(p.compareTo(pok)<0)
+                pok = p;
         }
-        agent.set_curr_fruit(pq.peek());
-        return pq;
+        return pok;
     }
 
     //Given a list and an agent, makes the agent to walk on the path of the list
