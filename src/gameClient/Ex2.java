@@ -1,19 +1,19 @@
 package gameClient;
 
 import Server.Game_Server_Ex2;
-import api.directed_weighted_graph;
-import api.edge_data;
-import api.game_service;
+import api.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class Ex2 implements Runnable{
 
 
-    private int level = 5;
+    private int ga = 0;
+    private int level = 11;
     private Arena arena;
     private MyFrame frame;
     private List<CL_Agent> agents;
@@ -22,6 +22,7 @@ public class Ex2 implements Runnable{
     private directed_weighted_graph g;
     private int agentnum;
 
+
     public static void main(String[] args) {
         Thread thread = new Thread(new Ex2());
         thread.start();
@@ -29,8 +30,7 @@ public class Ex2 implements Runnable{
 
     @Override
     public void run() {
-        List<Integer> lst = new LinkedList<>();
-        lst.add(4);
+        int r = 0;
         game = Game_Server_Ex2.getServer(level);
         g = CreateFromJson.graphfromjson(game.getGraph());
         init();
@@ -38,20 +38,34 @@ public class Ex2 implements Runnable{
         while (game.isRunning())
         {
             update();
-            followpath(agents.get(0),lst);
-            //game.chooseNextEdge(0,4);
+            makelist();
+            for(int i=0;i<agents.size();i++) {
+//                Arena.getAgents(game.move(),g);
+//                arena.setAgents(agents);
+                CL_Agent agent = agents.get(i);
+                if(agent.getDest() == -1) {
+                    followpath(agent, agent.GetPath());
+                }
+                if(r%2==0) {
+                    Arena.getAgents(game.move(), g);
+                    arena.setAgents(agents);
+                }
+                r++;
+            }
         }
+        String res = game.toString();
 
+        System.out.println(res);
+        System.exit(0);
     }
-
 
     //Updates the frame
     private void update()
     {
-        agents = Arena.getAgents(game.move(),g);
-        arena.setAgents(agents);
-        pokemons = Arena.json2Pokemons(game.getPokemons());
-        arena.setPokemons(pokemons);
+//        agents = Arena.getAgents(game.move(),g);
+//        arena.setAgents(agents);
+//        pokemons = Arena.json2Pokemons(game.getPokemons());
+ //       arena.setPokemons(pokemons);
         try {
             Thread.sleep(100);
             frame.updatetime(game.timeToEnd());
@@ -61,12 +75,76 @@ public class Ex2 implements Runnable{
         }
     }
 
-    private void followpath(CL_Agent agent, List<Integer> lst)
+    private void makelist()
     {
+        agents = Arena.getAgents(game.getAgents(),g);
+        arena.setAgents(agents);
+        pokemons = Arena.json2Pokemons(game.getPokemons());
+        arena.setPokemons(pokemons);
+        updatepokemonsedges();
+
+        for(int i = 0; i<agentnum;i++)
+        {
+            CL_Agent agent = agents.get(i);
+            if(agent.getDest() == -1){// && agent.newpath()) {
+                PriorityQueue<CL_Pokemon> pq = createpqpok(i);
+                dw_graph_algorithms ga = new DWGraph_Algo(g);
+                CL_Pokemon pok = pq.peek();
+                edge_data e = pok.get_edge();
+                List<node_data> ls;
+                int mi = Math.min(e.getSrc(),e.getDest());
+                int ma = Math.max(e.getSrc(),e.getDest());
+                System.out.println("MAX: " + ma + " MIN: "+mi);
+                if(pok.getType()<0)
+                {
+                    ls = ga.shortestPath(agent.getSrcNode(),ma);
+                    if(!ls.contains(g.getNode(mi)))
+                        ls.add(g.getNode(mi));
+                }
+                else {
+                    ls = ga.shortestPath(agent.getSrcNode(),mi);
+                    if(!ls.contains(g.getNode(ma)))
+                    ls.add(g.getNode(ma));
+                }
+                System.out.println("!!" + ls);
+                agent.setPath(ls);
+            }
+
+        }
+    }
+
+    private PriorityQueue<CL_Pokemon> createpqpok(int i)
+    {
+        PriorityQueue<CL_Pokemon> pq = new PriorityQueue<>();
+        CL_Agent agent = agents.get(i);
+        dw_graph_algorithms ga = new DWGraph_Algo(g);
+        for(int j = 0; j<pokemons.size();j++)
+        {
+            CL_Pokemon pok = pokemons.get(j);
+            System.out.println(pok.get_edge());
+            edge_data e = pok.get_edge();
+            int m;
+            if(pok.getType() < 0)
+                m = Math.max(e.getSrc(),e.getDest());
+            else m = Math.min(e.getSrc(),e.getDest());
+            pok.setMin_dist(ga.shortestPathDist(agent.getSrcNode(),m)+e.getWeight());
+            System.out.println(pok.getMin_dist());
+            pq.add(pok);
+        }
+        return pq;
+    }
+
+    //Given a list and an agent, makes the agent to walk on the path of the list
+    private void followpath(CL_Agent agent, List<node_data> lst)
+    {
+        if(!lst.isEmpty() && agent.getSrcNode()==lst.get(0).getKey())
+            lst.remove(0);
+        System.out.println(lst.toString());
         if (!lst.isEmpty() && agent.getDest()==-1){
-            agent.setNextNode(lst.remove(0));
+            int i = lst.remove(0).getKey();
+            if(i!=agent.getDest())
+                System.out.println(agent.setNextNode(i));
             game.chooseNextEdge(agent.getID(), agent.getNextNode());
-            game.move();
         }
     }
 

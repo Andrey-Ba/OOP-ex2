@@ -7,6 +7,9 @@ import api.node_data;
 import gameClient.util.Point3D;
 import org.json.JSONObject;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class CL_Agent {
 		public static final double EPS = 0.0001;
 		private static int _count = 0;
@@ -21,11 +24,25 @@ public class CL_Agent {
 		private CL_Pokemon _curr_fruit;
 		private long _sg_dt;
 		private int dest;
-		
+		private List<node_data> path = new LinkedList<>();
 		private double _value;
-		
-		
-		public CL_Agent(directed_weighted_graph g, int start_node) {
+
+
+	public void setPath(List<node_data> path) {
+			this.path = path;
+	}
+
+	public boolean newpath()
+	{
+		return path.isEmpty();
+	}
+
+	public List<node_data> GetPath()
+	{
+		return path;
+	}
+
+	public CL_Agent(directed_weighted_graph g, int start_node) {
 			_gg = g;
 			setMoney(0);
 			this._curr_node = _gg.getNode(start_node);
@@ -39,6 +56,7 @@ public class CL_Agent {
 				// "GameServer":{"graph":"A0","pokemons":3,"agents":1}}
 				line = new JSONObject(json);
 				JSONObject ttt = line.getJSONObject("Agent");
+				System.out.println(ttt.toString());
 				int id = ttt.getInt("id");
 				if(id==this.getID() || this.getID() == -1) {
 					if(this.getID() == -1) {_id = id;}
