@@ -217,10 +217,13 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
         JSONObject o = new JSONObject();
         JSONArray ja2 = new JSONArray();
+        //Build the json object
         try {
+            //Put g's nodes into the object
             o.put("Nodes",g.getV());
             for(int i = 0; i<g.nodeSize();i++)
             {
+                //Put g's edges into the object
                 Iterator<edge_data> it = g.getE(i).iterator();
                 while (it.hasNext())
                 {
@@ -238,6 +241,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             e.printStackTrace();
         }
         try {
+            //Save the object
             FileWriter f = new FileWriter(file);
             f.write(o.toString());
             f.flush();
