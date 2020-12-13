@@ -1,10 +1,7 @@
 package api;
 
-//import com.google.gson.Gson;
-//import com.google.gson.JsonParser;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -217,66 +214,70 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
     @Override
     public boolean save(String file) {
-//        Gson gs = new Gson();
-//        try {
-//            FileWriter f = new FileWriter(file);
-//            gs.toJson(g,f);
-//            f.flush();
-//            f.close();
-//            return true;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        Gson gs = new GsonBuilder().create();
-//        try {
-//            FileWriter f = new FileWriter(file);
-//            gs.toJson(g,f);
-//            f.flush();
-//            f.close();
-//            return true;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+
+        JSONObject o = new JSONObject();
+        JSONArray ja2 = new JSONArray();
+        try {
+            o.put("Nodes",g.getV());
+            for(int i = 0; i<g.nodeSize();i++)
+            {
+                Iterator<edge_data> it = g.getE(i).iterator();
+                while (it.hasNext())
+                {
+                    edge_data e = it.next();
+                    JSONObject ob = new JSONObject();
+                    ob.put("src",e.getSrc());
+                    ob.put("dest",e.getDest());
+                    ob.put("w", e.getWeight());
+                    ja2.put(ob);
+                }
+            }
+            o.put("Edges", ja2);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            FileWriter f = new FileWriter(file);
+            f.write(o.toString());
+            f.flush();
+            f.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean load(String file) {
-//        JsonParser jp = new JsonParser();
-//        JSONObject o;
-//        try {
-//            FileReader f = new FileReader(file);
-//             String s = jp.parse(f).toString();
-//             //System.out.println(s);
-//             o = new JSONObject(s);
-//             String s1 = o.getJSONObject("V").toString();
-//             Gson gson = new GsonBuilder().create();
-//             HashMap<String,node_data> hm = gson.fromJson(s1,HashMap.class);
-//             directed_weighted_graph graph = new DWGraph_DS();
-//             Iterator<String> it = hm.keySet().iterator();
-//             while (it.hasNext()) {
-//                 graph.addNode(new NodeData(Integer.parseInt(it.next())));
-//             }
-//             s1 = o.getJSONObject("E").toString();
-//             HashMap<String,HashMap<Integer,edge_data>> hm2 = gson.fromJson(s1,HashMap.class);
-//             it = hm.keySet().iterator();
-//             while (it.hasNext())
-//             {
-//                 Iterator<edge_data> it2 = (hm2.get(it.next())).values().iterator();
-//                 System.out.println(it2.next().toString());
-//                 while ( it2.hasNext())
-//                 {
-//                     edge_data e = it2.next();
-//                     graph.connect(e.getSrc(),e.getDest(),e.getWeight());
-//                 }
-//             }
-//             g = graph;
-//             f.close();
-//             return true;
-//
-//        } catch (IOException | JSONException e) {
-//            e.printStackTrace();
-//        }
+        directed_weighted_graph graph = new DWGraph_DS();
+        String s = "";
+        try {
+            FileReader f = new FileReader(file);
+            s = new JsonParser().parse(f).toString();
+            f.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            JSONObject o = new JSONObject(s);
+            JSONArray ja = o.getJSONArray("Nodes");
+            JSONArray ja2 = o.getJSONArray("Edges");
+            for(int i = 0; i<ja.length();i++) {
+                JSONObject ob = ja.getJSONObject(i);
+                graph.addNode(new NodeData(ob.getInt("key")));
+            }
+            for(int i = 0; i<ja2.length();i++)
+            {
+                JSONObject ob = ja2.getJSONObject(i);
+                graph.connect(ob.getInt("src"),ob.getInt("dest"),ob.getDouble("w"));
+            }
+            g = graph;
+            return true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 

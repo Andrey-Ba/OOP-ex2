@@ -10,7 +10,7 @@ import java.util.List;
 public class Ex2 implements Runnable{
 
 
-    private int level = 1;
+    private int level = 5;
     private Arena arena;
     private MyFrame frame;
     private List<CL_Agent> agents;
@@ -35,13 +35,13 @@ public class Ex2 implements Runnable{
         game.startGame();
         while (game.isRunning())
         {
-            update();
+            updateframe();
             makelist();
             for(int i=0;i<agents.size();i++) {
                 CL_Agent agent = agents.get(i);
-                //if(agent.getDest() == -1) {
+                if(agent.getDest() == -1) {
                     followpath(agent, agent.GetPath());
-                //}
+                }
                 if(r%1==0) {
                     Arena.getAgents(game.move(), g);
                     arena.setAgents(agents);
@@ -56,12 +56,8 @@ public class Ex2 implements Runnable{
     }
 
     //Updates the frame
-    private void update()
+    private void updateframe()
     {
-//        agents = Arena.getAgents(game.move(),g);
-//        arena.setAgents(agents);
-//        pokemons = Arena.json2Pokemons(game.getPokemons());
- //       arena.setPokemons(pokemons);
         try {
             Thread.sleep(100);
             frame.updatetime(game.timeToEnd());
@@ -71,14 +67,34 @@ public class Ex2 implements Runnable{
         }
     }
 
-    private void makelist()
+    private void updatearena()
     {
         agents = Arena.getAgents(game.getAgents(),g);
         arena.setAgents(agents);
         pokemons = Arena.json2Pokemons(game.getPokemons());
         arena.setPokemons(pokemons);
         updatepokemonsedges();
+    }
 
+    private void makepaths()
+    {
+        updatearena();
+    }
+
+    private void updateedges()
+    {
+        for(int i = 0; i<pokemons.size();i++)
+        {
+            CL_Pokemon pok = pokemons.get(i);
+            edge_data e = pok.get_edge();
+            e.setTag(e.getTag()+(int)pok.getValue());
+
+        }
+    }
+
+    private void makelist()
+    {
+        updatearena();
         for(int i = 0; i<agentnum;i++)
         {
             CL_Agent agent = agents.get(i);
@@ -89,7 +105,6 @@ public class Ex2 implements Runnable{
                 List<node_data> ls;
                 int mi = Math.min(e.getSrc(),e.getDest());
                 int ma = Math.max(e.getSrc(),e.getDest());
-                System.out.println("MAX: " + ma + " MIN: "+mi);
                 if(pok.getType()<0)
                 {
                     ls = ga.shortestPath(agent.getSrcNode(),ma);
@@ -107,6 +122,8 @@ public class Ex2 implements Runnable{
         }
     }
 
+
+    //Given an agent, returns the closest pokemon to it
     private CL_Pokemon Closestpokemon(CL_Agent agent)
     {
         dw_graph_algorithms ga = new DWGraph_Algo(g);
