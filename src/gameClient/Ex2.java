@@ -27,7 +27,6 @@ public class Ex2 implements Runnable{
 
     @Override
     public void run() {
-        int r = 0;
         game = Game_Server_Ex2.getServer(level);
         //game.login(324560317);
         g = CreateFromJson.graphfromjson(game.getGraph());
@@ -42,11 +41,8 @@ public class Ex2 implements Runnable{
                 if(agent.getDest() == -1) {
                     followpath(agent, agent.GetPath());
                 }
-                if(r%1==0) {
-                    Arena.getAgents(game.move(), g);
-                    arena.setAgents(agents);
-                }
-                r++;
+                Arena.getAgents(game.move(), g);
+                arena.setAgents(agents);
             }
         }
         String res = game.toString();
