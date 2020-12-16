@@ -10,13 +10,14 @@ import java.util.List;
 public class Ex2 implements Runnable{
 
 
-    private int level = 23;
+    private int level = 12;
     private Arena arena;
     private MyFrame frame;
     private List<CL_Agent> agents;
     private List<CL_Pokemon> pokemons;
     private game_service game;
     private directed_weighted_graph g;
+    private ForwardingTables t;
     private int agentnum;
 
 
@@ -34,20 +35,31 @@ public class Ex2 implements Runnable{
         for(int i = 0; i<30000;i++)
             for (int j=0;j<10;j++);
         init();
-        ForwardingTables t = new ForwardingTables(g);
-        t.calctables();
         game.startGame();
         while (game.isRunning())
         {
             updateframe();
-            makelist();
-            for(int i=0;i<agents.size();i++) {
+//            makelist();
+//            for(int i=0;i<agents.size();i++) {
+//                CL_Agent agent = agents.get(i);
+//                if(agent.getDest() == -1) {
+//                    followpath(agent, agent.GetPath());
+//                }
+//                Arena.getAgents(game.move(), g);
+//                arena.setAgents(agents);
+//            }
+            for(int i = 0;i<agents.size();i++)
+            {
                 CL_Agent agent = agents.get(i);
-                if(agent.getDest() == -1) {
-                    followpath(agent, agent.GetPath());
+                if(agent.getFdest() == -1)
+                {
+                    agentdest(agents.get(i));
                 }
-                Arena.getAgents(game.move(), g);
-                arena.setAgents(agents);
+                if(agent.getDest()==-1)
+                {
+                    game.chooseNextEdge(agent.getID(),t.Nextedge(agent.getSrcNode(),agent.getFdest()));
+                }
+                game.move();
             }
         }
         String res = game.toString();
@@ -59,38 +71,45 @@ public class Ex2 implements Runnable{
     //Updates the frame
     private void updateframe()
     {
-        try {
-            Thread.sleep(100);
-            frame.updatetime(game.timeToEnd());
-            frame.repaint();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        frame.repaint();
+        frame.updatetime(game.timeToEnd());
+//        try {
+//            Thread.sleep(100);
+//            frame.updatetime(game.timeToEnd());
+//            frame.repaint();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void updatearena()
     {
+        int[] arr = new int[agentnum];
+        //for(int i = 0;i<arr.length;i++)
+            //arr[i] = agents.get(i).getFdest();
         agents = Arena.getAgents(game.getAgents(),g);
         arena.setAgents(agents);
+        //for(int i = 0;i<arr.length;i++)
+            //agents.get(i).setFdest(arr[i]);
         pokemons = Arena.json2Pokemons(game.getPokemons());
         arena.setPokemons(pokemons);
         updatepokemonsedges();
     }
 
-    private void makepaths()
+    private void agentdest(CL_Agent agent)
     {
         updatearena();
-    }
-
-    private void updateedges()
-    {
+        CL_Pokemon pok = pokemons.get(0);
         for(int i = 0; i<pokemons.size();i++)
         {
-            CL_Pokemon pok = pokemons.get(i);
-            edge_data e = pok.get_edge();
-            e.setTag(e.getTag()+(int)pok.getValue());
-
+            CL_Pokemon p = pokemons.get(i);
+            EdgeData e = (EdgeData) pok.get_edge();
+            double d1 = t.Distancetoedge(agent.getSrcNode(),((EdgeData) pok.get_edge()).getID());
+            double d2 = t.Distancetoedge(agent.getSrcNode(),((EdgeData) p.get_edge()).getID());
+            if(d1>d2)
+                pok = p;
         }
+        agent.setFdest(((EdgeData) pok.get_edge()).getID());
     }
 
     private void makelist()
@@ -117,7 +136,7 @@ public class Ex2 implements Runnable{
                     if(!ls.contains(g.getNode(ma)))
                         ls.add(g.getNode(ma));
                 }
-                agent.setPath(ls);
+                //agent.setPath(ls);
             }
 
         }
@@ -199,6 +218,9 @@ public class Ex2 implements Runnable{
         frame.setSize(900,900);
         //Show the frame
         frame.show();
+        //Create forwardingtable
+        t = new ForwardingTables(g);
+        t.calctables();
     }
 
     //Update all pokemon's edges

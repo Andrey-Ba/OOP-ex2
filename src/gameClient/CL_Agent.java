@@ -24,22 +24,23 @@ public class CL_Agent {
 		private CL_Pokemon _curr_fruit;
 		private long _sg_dt;
 		private int dest;
-		private List<node_data> path = new LinkedList<>();
+		private int fdest=-1;
+		//private List<node_data> path = new LinkedList<>();
 		private double _value;
 
-	public void setPath(List<node_data> path) {
-			this.path = path;
-	}
-
-	public boolean newpath()
-	{
-		return path.isEmpty();
-	}
-
-	public List<node_data> GetPath()
-	{
-		return path;
-	}
+//	public void setPath(List<node_data> path) {
+//			this.path = path;
+//	}
+//
+//	public boolean newpath()
+//	{
+//		return path.isEmpty();
+//	}
+//
+//	public List<node_data> GetPath()
+//	{
+//		return path;
+//	}
 
 	public CL_Agent(directed_weighted_graph g, int start_node) {
 			_gg = g;
@@ -55,7 +56,7 @@ public class CL_Agent {
 				// "GameServer":{"graph":"A0","pokemons":3,"agents":1}}
 				line = new JSONObject(json);
 				JSONObject ttt = line.getJSONObject("Agent");
-				System.out.println(ttt.toString());
+				//System.out.println(ttt.toString());
 				int id = ttt.getInt("id");
 				if(id==this.getID() || this.getID() == -1) {
 					if(this.getID() == -1) {_id = id;}
@@ -188,4 +189,11 @@ public class CL_Agent {
 			this._sg_dt = _sg_dt;
 		}
 
+	public int getFdest() {
+		return fdest;
+	}
+
+	public void setFdest(int fdest) {
+		this.fdest = fdest;
+	}
 }
