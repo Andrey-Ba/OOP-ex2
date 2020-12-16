@@ -11,7 +11,8 @@ public class CL_Pokemon implements Comparable<CL_Pokemon>{
 	private Point3D _pos;
 	private double min_dist;
 	private int min_ro;
-	
+	private boolean chased = false;
+
 	public CL_Pokemon(Point3D p, int t, double v, double s, edge_data e) {
 		_type = t;
 	//	_speed = s;
@@ -33,7 +34,7 @@ public class CL_Pokemon implements Comparable<CL_Pokemon>{
 		}
 		return ans;
 	}
-	public String toString() {return "F:{v="+_value+", t="+_type+"}";}
+	public String toString() {return "F:{v="+_value+", t="+_type+", Chased: "+chased+"}";}
 	public edge_data get_edge() {
 		return _edge;
 	}
@@ -67,11 +68,22 @@ public class CL_Pokemon implements Comparable<CL_Pokemon>{
 
 	@Override
 	public int compareTo(@NotNull CL_Pokemon o) {
-		double d = min_dist - o.getMin_dist();
+		//double d = min_dist - o.getMin_dist();
+		double d = _value/min_dist - o.getValue()/o.getMin_dist();
 		if(d<0)
 			return -1;
 		if(d>0)
 			return 1;
 		return 0;
+	}
+
+	public void gettingchased()
+	{
+		chased = true;
+	}
+
+	public boolean ischased()
+	{
+		return chased;
 	}
 }

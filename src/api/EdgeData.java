@@ -6,19 +6,27 @@ import java.util.Objects;
 
 public class EdgeData implements edge_data
 {
+    //Used
+    private int ID;
+
     private int src;
     private int dest;
     private double weight;
     private String info;
     private int tag;
+    private double tw;
+    static int id=0;
 
     public EdgeData(int s, int d)
     {
+        ID=id;
         src = s;
         dest = d;
-        weight = 0;
+        weight = -1;
         info = "";
-        tag = 0;
+        tag = -1;
+        tw = -1;
+        id++;
     }
 
     public EdgeData(int s, int d, double w)
@@ -65,6 +73,18 @@ public class EdgeData implements edge_data
     public void setWeight(double w)
     {
         weight = w;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public double gettw() {
+        return tw;
+    }
+
+    public void settw(double tw) {
+        this.tw = tw;
     }
 
     @Override

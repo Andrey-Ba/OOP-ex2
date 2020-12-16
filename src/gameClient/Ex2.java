@@ -10,7 +10,7 @@ import java.util.List;
 public class Ex2 implements Runnable{
 
 
-    private int level = 5;
+    private int level = 23;
     private Arena arena;
     private MyFrame frame;
     private List<CL_Agent> agents;
@@ -30,7 +30,12 @@ public class Ex2 implements Runnable{
         game = Game_Server_Ex2.getServer(level);
         //game.login(324560317);
         g = CreateFromJson.graphfromjson(game.getGraph());
+        System.out.println(g.edgeSize());
+        for(int i = 0; i<30000;i++)
+            for (int j=0;j<10;j++);
         init();
+        ForwardingTables t = new ForwardingTables(g);
+        t.calctables();
         game.startGame();
         while (game.isRunning())
         {
@@ -110,7 +115,7 @@ public class Ex2 implements Runnable{
                 else {
                     ls = ga.shortestPath(agent.getSrcNode(),mi);
                     if(!ls.contains(g.getNode(ma)))
-                    ls.add(g.getNode(ma));
+                        ls.add(g.getNode(ma));
                 }
                 agent.setPath(ls);
             }
@@ -118,14 +123,26 @@ public class Ex2 implements Runnable{
         }
     }
 
+    private void addtolist(List<node_data> lst)
+    {
+
+    }
 
     //Given an agent, returns the closest pokemon to it
     private CL_Pokemon Closestpokemon(CL_Agent agent)
     {
         dw_graph_algorithms ga = new DWGraph_Algo(g);
-        CL_Pokemon pok = pokemons.get(0);
-        for (int i = 0; i < pokemons.size();i++){
+        int i = 0;
+        CL_Pokemon pok = pokemons.get(i);
+        while (pok.ischased()) {
+            pok = pokemons.get(i);
+            i++;
+        }
+        for (; i < pokemons.size();i++){
             CL_Pokemon p = pokemons.get(i);
+            System.out.println(p);
+            if(p.ischased())
+                continue;
             edge_data e = p.get_edge();
             int m;
             if(pok.getType() > 0)
@@ -135,6 +152,9 @@ public class Ex2 implements Runnable{
             if(p.compareTo(pok)<0)
                 pok = p;
         }
+        System.out.println("?????");
+        pok.gettingchased();
+        System.out.println(pok.ischased());
         return pok;
     }
 
