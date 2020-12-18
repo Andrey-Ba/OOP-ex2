@@ -10,7 +10,7 @@ import java.util.List;
 public class Ex2 implements Runnable{
 
 
-    private int level = 12;
+    private int level = 23;
     private Arena arena;
     private MyFrame frame;
     private List<CL_Agent> agents;
@@ -31,35 +31,24 @@ public class Ex2 implements Runnable{
         game = Game_Server_Ex2.getServer(level);
         //game.login(324560317);
         g = CreateFromJson.graphfromjson(game.getGraph());
-        System.out.println(g.edgeSize());
-        for(int i = 0; i<30000;i++)
-            for (int j=0;j<10;j++);
         init();
         game.startGame();
         while (game.isRunning())
         {
             updateframe();
-//            makelist();
-//            for(int i=0;i<agents.size();i++) {
-//                CL_Agent agent = agents.get(i);
-//                if(agent.getDest() == -1) {
-//                    followpath(agent, agent.GetPath());
-//                }
-//                Arena.getAgents(game.move(), g);
-//                arena.setAgents(agents);
-//            }
+            updatearena();
             for(int i = 0;i<agents.size();i++)
             {
                 CL_Agent agent = agents.get(i);
                 if(agent.getFdest() == -1)
                 {
                     agentdest(agents.get(i));
+                    game.move();
                 }
                 if(agent.getDest()==-1)
                 {
                     game.chooseNextEdge(agent.getID(),t.Nextedge(agent.getSrcNode(),agent.getFdest()));
                 }
-                game.move();
             }
         }
         String res = game.toString();
@@ -71,26 +60,21 @@ public class Ex2 implements Runnable{
     //Updates the frame
     private void updateframe()
     {
-        frame.repaint();
-        frame.updatetime(game.timeToEnd());
-//        try {
-//            Thread.sleep(100);
-//            frame.updatetime(game.timeToEnd());
-//            frame.repaint();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+//        frame.updatetime(game.timeToEnd());
+//        frame.repaint();
+        try {
+            Thread.sleep(100);
+            frame.updatetime(game.timeToEnd());
+            frame.repaint();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void updatearena()
     {
-        int[] arr = new int[agentnum];
-        //for(int i = 0;i<arr.length;i++)
-            //arr[i] = agents.get(i).getFdest();
         agents = Arena.getAgents(game.getAgents(),g);
         arena.setAgents(agents);
-        //for(int i = 0;i<arr.length;i++)
-            //agents.get(i).setFdest(arr[i]);
         pokemons = Arena.json2Pokemons(game.getPokemons());
         arena.setPokemons(pokemons);
         updatepokemonsedges();
@@ -109,86 +93,30 @@ public class Ex2 implements Runnable{
             if(d1>d2)
                 pok = p;
         }
+        edge_data e = pok.get_edge();
+        pok = maybeanotherone(pok);
         agent.setFdest(((EdgeData) pok.get_edge()).getID());
     }
 
-    private void makelist()
+    private CL_Pokemon maybeanotherone(CL_Pokemon pok)
     {
-        updatearena();
-        for(int i = 0; i<agentnum;i++)
+        edge_data e = pok.get_edge();
+        int src = e.getSrc();
+        int dest = e.getDest();
+        boolean b = src > dest && pok.getType() < 0 || src < dest && pok.getType() > 0;
+        if(b)
         {
-            CL_Agent agent = agents.get(i);
-            if(agent.getDest() == -1 ){
-                dw_graph_algorithms ga = new DWGraph_Algo(g);
-                CL_Pokemon pok = Closestpokemon(agent);
-                edge_data e = pok.get_edge();
-                List<node_data> ls;
-                int mi = Math.min(e.getSrc(),e.getDest());
-                int ma = Math.max(e.getSrc(),e.getDest());
-                if(pok.getType()<0)
-                {
-                    ls = ga.shortestPath(agent.getSrcNode(),ma);
-                    if(!ls.contains(g.getNode(mi)))
-                        ls.add(g.getNode(mi));
-                }
-                else {
-                    ls = ga.shortestPath(agent.getSrcNode(),mi);
-                    if(!ls.contains(g.getNode(ma)))
-                        ls.add(g.getNode(ma));
-                }
-                //agent.setPath(ls);
+            for (int i = 0; i < pokemons.size();i++)
+            {
+                CL_Pokemon p = pokemons.get(i);
+                edge_data ed = p.get_edge();
+                int src2 = ed.getSrc();
+                int dest2 = ed.getDest();
+                if(dest2 == src && (src2 > dest2 && p.getType() < 0 || dest2 > src2 && p.getType()>0))
+                    pok = p;
             }
-
         }
-    }
-
-    private void addtolist(List<node_data> lst)
-    {
-
-    }
-
-    //Given an agent, returns the closest pokemon to it
-    private CL_Pokemon Closestpokemon(CL_Agent agent)
-    {
-        dw_graph_algorithms ga = new DWGraph_Algo(g);
-        int i = 0;
-        CL_Pokemon pok = pokemons.get(i);
-        while (pok.ischased()) {
-            pok = pokemons.get(i);
-            i++;
-        }
-        for (; i < pokemons.size();i++){
-            CL_Pokemon p = pokemons.get(i);
-            System.out.println(p);
-            if(p.ischased())
-                continue;
-            edge_data e = p.get_edge();
-            int m;
-            if(pok.getType() > 0)
-                m = Math.max(e.getSrc(),e.getDest());
-            else m = Math.min(e.getSrc(),e.getDest());
-            pok.setMin_dist(ga.shortestPathDist(agent.getSrcNode(),m)+e.getWeight());
-            if(p.compareTo(pok)<0)
-                pok = p;
-        }
-        System.out.println("?????");
-        pok.gettingchased();
-        System.out.println(pok.ischased());
         return pok;
-    }
-
-    //Given a list and an agent, makes the agent to walk on the path of the list
-    private void followpath(CL_Agent agent, List<node_data> lst)
-    {
-        if(!lst.isEmpty() && agent.getSrcNode()==lst.get(0).getKey())
-            lst.remove(0);
-        System.out.println(lst.toString());
-        if (!lst.isEmpty() && agent.getDest()==-1){
-            int i = lst.remove(0).getKey();
-            if(i!=agent.getDest())
-                System.out.println(agent.setNextNode(i));
-            game.chooseNextEdge(agent.getID(), agent.getNextNode());
-        }
     }
 
     //Create the arena, frame and place the agents

@@ -25,22 +25,7 @@ public class CL_Agent {
 		private long _sg_dt;
 		private int dest;
 		private int fdest=-1;
-		//private List<node_data> path = new LinkedList<>();
 		private double _value;
-
-//	public void setPath(List<node_data> path) {
-//			this.path = path;
-//	}
-//
-//	public boolean newpath()
-//	{
-//		return path.isEmpty();
-//	}
-//
-//	public List<node_data> GetPath()
-//	{
-//		return path;
-//	}
 
 	public CL_Agent(directed_weighted_graph g, int start_node) {
 			_gg = g;
