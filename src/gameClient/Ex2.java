@@ -9,8 +9,8 @@ import java.util.List;
 
 public class Ex2 implements Runnable{
 
-
-    private int level = 23;
+    private long id;
+    private int level = 21;
     private Arena arena;
     private MyFrame frame;
     private List<CL_Agent> agents;
@@ -20,9 +20,15 @@ public class Ex2 implements Runnable{
     private ForwardingTables t;
     private int agentnum;
 
+    public Ex2(int l, long id)
+    {
+        level = l;
+        this.id = id;
+    }
 
     public static void main(String[] args) {
-        Thread thread = new Thread(new Ex2());
+        
+        Thread thread = new Thread(new Ex2(23,123));
         thread.start();
     }
 
@@ -31,8 +37,11 @@ public class Ex2 implements Runnable{
         game = Game_Server_Ex2.getServer(level);
         //game.login(324560317);
         g = CreateFromJson.graphfromjson(game.getGraph());
+        //Initiate everything
         init();
         game.startGame();
+
+        int r = 0;
         while (game.isRunning())
         {
             updateframe();
@@ -41,14 +50,15 @@ public class Ex2 implements Runnable{
             {
                 CL_Agent agent = agents.get(i);
                 if(agent.getFdest() == -1)
-                {
                     agentdest(agents.get(i));
-                    game.move();
-                }
-                if(agent.getDest()==-1)
+                if(agent.getDest()==-1 && agent.getFdest() != -1)
                 {
                     game.chooseNextEdge(agent.getID(),t.Nextedge(agent.getSrcNode(),agent.getFdest()));
                 }
+                //A delay to keep the moves low
+                if((agentnum == 1 && r%20==0) || (agentnum >1 && r%27*agentnum==0))
+                    game.move();
+                r++;
             }
         }
         String res = game.toString();
@@ -60,10 +70,9 @@ public class Ex2 implements Runnable{
     //Updates the frame
     private void updateframe()
     {
-//        frame.updatetime(game.timeToEnd());
-//        frame.repaint();
         try {
-            Thread.sleep(100);
+            //Another delay to keep the moves low
+            Thread.sleep(2,10);
             frame.updatetime(game.timeToEnd());
             frame.repaint();
         } catch (InterruptedException e) {
@@ -75,6 +84,7 @@ public class Ex2 implements Runnable{
     {
         agents = Arena.getAgents(game.getAgents(),g);
         arena.setAgents(agents);
+        setagentrange();
         pokemons = Arena.json2Pokemons(game.getPokemons());
         arena.setPokemons(pokemons);
         updatepokemonsedges();
@@ -83,14 +93,53 @@ public class Ex2 implements Runnable{
     private void agentdest(CL_Agent agent)
     {
         updatearena();
-        CL_Pokemon pok = pokemons.get(0);
+        int j = 0;
+        CL_Pokemon pok = pokemons.get(j);
+
+        //Check which is in range
+        while (!agent.inrange(pok.get_edge().getDest()) && j < pokemons.size())
+        {
+            pok = pokemons.get(j);
+            j++;
+        }
+
+        //If now one in range then get the closest one
+        if(j==pokemons.size())
+        {
+            agentdestnrange(agent);
+            return;
+        }
+
+        //Find the closest in range
         for(int i = 0; i<pokemons.size();i++)
         {
             CL_Pokemon p = pokemons.get(i);
             EdgeData e = (EdgeData) pok.get_edge();
-            double d1 = t.Distancetoedge(agent.getSrcNode(),((EdgeData) pok.get_edge()).getID());
-            double d2 = t.Distancetoedge(agent.getSrcNode(),((EdgeData) p.get_edge()).getID());
-            if(d1>d2)
+            //If there one closer in the range than go after him
+            if(agent.inrange(e.getSrc())) {
+                double d1 = t.Distancetoedge(agent.getSrcNode(), ((EdgeData) pok.get_edge()).getID());
+                double d2 = t.Distancetoedge(agent.getSrcNode(), ((EdgeData) p.get_edge()).getID());
+                if (d1 > d2)
+                    pok = p;
+            }
+        }
+        edge_data e = pok.get_edge();
+        pok = maybeanotherone(pok);
+        agent.setFdest(((EdgeData) pok.get_edge()).getID());
+
+    }
+
+    private void agentdestnrange(CL_Agent agent)
+    {
+        CL_Pokemon pok = pokemons.get(0);
+
+        for(int i = 0; i<pokemons.size();i++)
+        {
+            CL_Pokemon p = pokemons.get(i);
+            EdgeData e = (EdgeData) pok.get_edge();
+            double d1 = t.Distancetoedge(agent.getSrcNode(), ((EdgeData) pok.get_edge()).getID());
+            double d2 = t.Distancetoedge(agent.getSrcNode(), ((EdgeData) p.get_edge()).getID());
+            if (d1 > d2)
                 pok = p;
         }
         edge_data e = pok.get_edge();
@@ -98,13 +147,14 @@ public class Ex2 implements Runnable{
         agent.setFdest(((EdgeData) pok.get_edge()).getID());
     }
 
+
+
     private CL_Pokemon maybeanotherone(CL_Pokemon pok)
     {
         edge_data e = pok.get_edge();
         int src = e.getSrc();
         int dest = e.getDest();
-        boolean b = src > dest && pok.getType() < 0 || src < dest && pok.getType() > 0;
-        if(b)
+        if(src > dest && pok.getType() < 0 || src < dest && pok.getType() > 0)
         {
             for (int i = 0; i < pokemons.size();i++)
             {
@@ -143,6 +193,9 @@ public class Ex2 implements Runnable{
         //Set agents list for the arena
         arena.setAgents(agents);
         //Set the frame size
+
+        setagentrange();
+
         frame.setSize(900,900);
         //Show the frame
         frame.show();
@@ -150,6 +203,109 @@ public class Ex2 implements Runnable{
         t = new ForwardingTables(g);
         t.calctables();
     }
+
+    //Sets for the agents range that they will prefer to be in.
+    //Make a fast agent will rather be in a area where there are no slow agents.
+    private void setagentrange()
+    {
+        //If there only one agent he can go anywhere
+        if(agentnum == 1) {
+            agents.get(0).setRange(-1, g.nodeSize());
+            return;
+        }
+        //What speed considered to be fast.
+        int fast = 3;
+        //How many areas are in the map
+        int r = g.nodeSize()/agentnum;
+        boolean all_fast = true, all_slow = true;
+
+        //Check if all the agents are fast or all slow
+        for (int i = 0; i<agentnum;i++)
+        {
+            CL_Agent agent = agents.get(i);
+            if(agent.getSpeed() < fast)
+                all_fast = false;
+            if(agent.getSpeed() >= fast)
+                all_slow = false;
+        }
+        //If all fast, each assigned to it's on area
+        if(all_fast) {
+            for (int i = 0; i < agentnum; i++) {
+                CL_Agent agent = agents.get(i);
+                agent.setRange(i * r, i * r + r - 1);
+            }
+            return;
+        }
+        //If all slow, no agent is limited
+        if(all_slow)
+        {
+            for (int i = 0; i < agentnum; i++) {
+                CL_Agent agent = agents.get(i);
+                agent.setRange(-1, g.nodeSize());
+            }
+            return;
+        }
+
+        //If not all slow or fast make the fast prefer area without slow agents
+        int[] agent_range = new int[agentnum];
+        boolean[] emptyrange = new boolean[agentnum];
+
+        //Firstly check which area each agent is at
+        for (int i = 0; i<agentnum; i++)
+        {
+            CL_Agent agent = agents.get(i);
+            int pos = agent.getSrcNode();
+            for(int j = 1; j<= agentnum;j++)
+            {
+                if(pos < j*r)
+                    agent_range[i] = j-1;
+            }
+//            if(pos < r)
+//                agent_range[i] = 0;
+//            if(pos >= 2*r)
+//                agent_range[i] = 2;
+//            else agent_range[i] = 1;
+        }
+
+        //Check which ranges the slow agents are at
+        for(int i = 0; i < agentnum; i++)
+        {
+            CL_Agent agent = agents.get(i);
+            if(agent.getSpeed() < fast)
+            {
+                emptyrange[agent_range[i]] = true;
+            }
+        }
+
+        for(int i = 0; i< agentnum; i++)
+        {
+            CL_Agent agent = agents.get(i);
+            if(agent.getSpeed() < fast) {
+                agent.setRange(-1, g.nodeSize());
+            }
+            else
+            {
+                int j = agent_range[i];
+                while (emptyrange[j%agentnum])
+                {
+                    j++;
+                }
+                agent.setRange((j%agentnum)*r,(j%agentnum)*r+r-1);
+                emptyrange[j%agentnum] = true;
+            }
+        }
+
+    }
+
+//    Old version
+//    for (int i = 0; i<agentnum;i++)
+//    {
+//        CL_Agent agent = agents.get(i);
+//        if(agent.getSpeed()>2 ) {
+//            agent.setRange(i * r, i * r + r - 1);
+//        }
+//        else agent.setRange(-1,g.nodeSize());
+//    }
 
     //Update all pokemon's edges
     private void updatepokemonsedges() {
@@ -184,20 +340,24 @@ public class Ex2 implements Runnable{
     //Find most valuable pokemons
     private CL_Pokemon[] mvpok()
     {
-
         CL_Pokemon[] mvp = new CL_Pokemon[agentnum];
+        boolean[] b = new boolean[pokemons.size()];
         //Set the first pokemons
         for(int i = 0;i<pokemons.size() && i<agentnum;i++)
         {
-            mvp[i]=pokemons.get(i);
+            mvp[i] = pokemons.get(i);
+            b[i] = true;
         }
 
         //Update the least valuable pokemon in the array to a more valuable pokemon
         for(int i = 0;i<pokemons.size();i++)
         {
             int j = lvp(mvp);
-            if(pokemons.get(i).getValue()>mvp[j].getValue())
+            if(!b[i] && pokemons.get(i).getValue()>mvp[j].getValue()) {
                 mvp[j] = pokemons.get(i);
+                b[j] = false;
+                b[i] = true;
+            }
         }
         return mvp;
     }
@@ -208,7 +368,6 @@ public class Ex2 implements Runnable{
         int j = 0;
         for(int i = 1;i<pokemons.size() && i<agentnum;i++)
         {
-            j=i;
             if(arr[i].getValue()<arr[j].getValue())
                 j=i;
         }

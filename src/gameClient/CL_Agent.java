@@ -26,7 +26,19 @@ public class CL_Agent {
 		private int dest;
 		private int fdest=-1;
 		private double _value;
+		private int[] range;
 
+		public void setRange(int b, int t)
+		{
+			range = new int[2];
+			range[0]=b;
+			range[1]=t;
+		}
+
+		public boolean inrange(int n)
+		{
+			return n >= range[0] && n <= range[1];
+		}
 	public CL_Agent(directed_weighted_graph g, int start_node) {
 			_gg = g;
 			setMoney(0);
@@ -35,13 +47,13 @@ public class CL_Agent {
 			_id = -1;
 			setSpeed(0);
 		}
+
 		public void update(String json) {
 			JSONObject line;
 			try {
 				// "GameServer":{"graph":"A0","pokemons":3,"agents":1}}
 				line = new JSONObject(json);
 				JSONObject ttt = line.getJSONObject("Agent");
-				//System.out.println(ttt.toString());
 				int id = ttt.getInt("id");
 				if(id==this.getID() || this.getID() == -1) {
 					if(this.getID() == -1) {_id = id;}
