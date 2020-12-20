@@ -227,6 +227,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
                 Iterator<edge_data> it = g.getE(i).iterator();
                 while (it.hasNext())
                 {
+                    //Create a json string out of the edge.
                     edge_data e = it.next();
                     JSONObject ob = new JSONObject();
                     ob.put("src",e.getSrc());
@@ -257,6 +258,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     public boolean load(String file) {
         directed_weighted_graph graph = new DWGraph_DS();
         String s = "";
+        //Using Gson parser to get the string of json file.
         try {
             FileReader f = new FileReader(file);
             s = new JsonParser().parse(f).toString();
@@ -266,17 +268,22 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         }
         try {
             JSONObject o = new JSONObject(s);
+            //Gets an array with the nodes of the graph
             JSONArray ja = o.getJSONArray("Nodes");
+            //Gets an array with the edges of the graph
             JSONArray ja2 = o.getJSONArray("Edges");
             for(int i = 0; i<ja.length();i++) {
+                //Getting from the json object the key of the node adding it to the graph.
                 JSONObject ob = ja.getJSONObject(i);
                 graph.addNode(new NodeData(ob.getInt("key")));
             }
             for(int i = 0; i<ja2.length();i++)
             {
+                //Getting from the json object the src, dest and weight of the edge adding it to the graph.
                 JSONObject ob = ja2.getJSONObject(i);
                 graph.connect(ob.getInt("src"),ob.getInt("dest"),ob.getDouble("w"));
             }
+            //Setting the current graph to the graph that was created.
             g = graph;
             return true;
         } catch (JSONException e) {
