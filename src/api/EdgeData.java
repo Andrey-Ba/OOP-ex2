@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class EdgeData implements edge_data
 {
-    //Used
+    //Used in forwarding tables for the game
     private int ID;
 
     private int src;
