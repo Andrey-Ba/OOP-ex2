@@ -27,7 +27,7 @@ public class Ex2 implements Runnable{
     }
 
     public static void main(String[] args) {
-        
+
         Thread thread = new Thread(new Ex2(23,123));
         thread.start();
     }
@@ -49,8 +49,11 @@ public class Ex2 implements Runnable{
             for(int i = 0;i<agents.size();i++)
             {
                 CL_Agent agent = agents.get(i);
+                //Checks if the agent doesn't have a pokemon to chase
                 if(agent.getFdest() == -1)
+                    //Assigns the agent a pokemon to chase
                     agentdest(agents.get(i));
+                //Moves the agent toward the pokemon it's chasing
                 if(agent.getDest()==-1 && agent.getFdest() != -1)
                 {
                     game.chooseNextEdge(agent.getID(),t.Nextedge(agent.getSrcNode(),agent.getFdest()));
@@ -80,6 +83,7 @@ public class Ex2 implements Runnable{
         }
     }
 
+    //Updates the agents and pokemon of the arena
     private void updatearena()
     {
         agents = Arena.getAgents(game.getAgents(),g);
@@ -90,6 +94,7 @@ public class Ex2 implements Runnable{
         updatepokemonsedges();
     }
 
+    //Assigns a pokemon to an agent
     private void agentdest(CL_Agent agent)
     {
         updatearena();
@@ -129,6 +134,7 @@ public class Ex2 implements Runnable{
 
     }
 
+    //Assigns pokemon to agent with out considering the agent's range
     private void agentdestnrange(CL_Agent agent)
     {
         CL_Pokemon pok = pokemons.get(0);
@@ -147,13 +153,23 @@ public class Ex2 implements Runnable{
         agent.setFdest(((EdgeData) pok.get_edge()).getID());
     }
 
-
-
+    //Checks if the agent can get another pokemon on the next edge
+    //If it can the agents will go after the next pokemon
+    //Over all tries to avoid the following situation
+    //A - an agent, 0 a pokemon, -A-> the route an agent will come from ,-0-> the way you can eat the pokemon
+    // -A-> x <-0- y <-0- z
+    //Will make the agent go that way:
+    // A -> y -> x -> y -> z -> y
+    //But the function make him go
+    // A-> y -> z -> y -> x
+    //Which is one edge less to walk on
     private CL_Pokemon maybeanotherone(CL_Pokemon pok)
     {
+        //Gets the pokemons edge
         edge_data e = pok.get_edge();
         int src = e.getSrc();
         int dest = e.getDest();
+        //Checks if the agents will have to go backward to catch him
         if(src > dest && pok.getType() < 0 || src < dest && pok.getType() > 0)
         {
             for (int i = 0; i < pokemons.size();i++)
@@ -162,6 +178,8 @@ public class Ex2 implements Runnable{
                 edge_data ed = p.get_edge();
                 int src2 = ed.getSrc();
                 int dest2 = ed.getDest();
+                //Checks if the new pokemon's edge it's destination is the source of the first pokemon
+                //If so by the type of the new pokemon it decides if the agent should chase after him
                 if(dest2 == src && (src2 > dest2 && p.getType() < 0 || dest2 > src2 && p.getType()>0))
                     pok = p;
             }
@@ -260,11 +278,6 @@ public class Ex2 implements Runnable{
                 if(pos < j*r)
                     agent_range[i] = j-1;
             }
-//            if(pos < r)
-//                agent_range[i] = 0;
-//            if(pos >= 2*r)
-//                agent_range[i] = 2;
-//            else agent_range[i] = 1;
         }
 
         //Check which ranges the slow agents are at
@@ -296,16 +309,6 @@ public class Ex2 implements Runnable{
         }
 
     }
-
-//    Old version
-//    for (int i = 0; i<agentnum;i++)
-//    {
-//        CL_Agent agent = agents.get(i);
-//        if(agent.getSpeed()>2 ) {
-//            agent.setRange(i * r, i * r + r - 1);
-//        }
-//        else agent.setRange(-1,g.nodeSize());
-//    }
 
     //Update all pokemon's edges
     private void updatepokemonsedges() {
