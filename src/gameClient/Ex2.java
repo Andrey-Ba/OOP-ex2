@@ -5,7 +5,9 @@ import api.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.util.List;
+import java.util.Scanner;
 
 public class Ex2 implements Runnable{
 
@@ -27,15 +29,22 @@ public class Ex2 implements Runnable{
     }
 
     public static void main(String[] args) {
-
-        Thread thread = new Thread(new Ex2(23,123));
+        InputStream stream = System.in;
+        Scanner scanner = new Scanner(stream);
+        String input = scanner.next();
+        String ID = "";
+        int i = 0;
+        Long Id = Long.parseLong(input);
+        int le = Integer.parseInt(scanner.next());
+        scanner.close();
+        Thread thread = new Thread(new Ex2(le,Id));
         thread.start();
     }
 
     @Override
     public void run() {
         game = Game_Server_Ex2.getServer(level);
-        //game.login(324560317);
+        game.login(id);
         g = CreateFromJson.graphfromjson(game.getGraph());
         //Initiate everything
         init();
@@ -75,7 +84,7 @@ public class Ex2 implements Runnable{
     {
         try {
             //Another delay to keep the moves low
-            Thread.sleep(2,10);
+            Thread.sleep(1,900000);
             frame.updatetime(game.timeToEnd());
             frame.repaint();
         } catch (InterruptedException e) {
