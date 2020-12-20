@@ -11,7 +11,6 @@ public class CL_Pokemon implements Comparable<CL_Pokemon>{
 	private Point3D _pos;
 	private double min_dist;
 	private int min_ro;
-	private boolean chased = false;
 
 	public CL_Pokemon(Point3D p, int t, double v, double s, edge_data e) {
 		_type = t;
@@ -75,15 +74,5 @@ public class CL_Pokemon implements Comparable<CL_Pokemon>{
 		if(d>0)
 			return 1;
 		return 0;
-	}
-
-	public void gettingchased()
-	{
-		chased = true;
-	}
-
-	public boolean ischased()
-	{
-		return chased;
 	}
 }
